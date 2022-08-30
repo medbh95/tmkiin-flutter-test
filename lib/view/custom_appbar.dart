@@ -37,51 +37,80 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
                           offset: Offset(0, 5))
                     ]),
                     width: 80.w,
-                    child: TextField(
-                        maxLines: 1,
-                        maxLength: 30,
-                        cursorColor: orangeCustom,
-                        textInputAction: TextInputAction.done,
-                        controller: maincontroller.searchController,
-                        decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            counterText: "",
-                            filled: true,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.solid,
-                                  color: orangeCustom),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            hintStyle: TextStyle(color: Colors.black54),
-                            hintText: "Search",
-                            fillColor: Colors.white),
-                        onChanged: (String value) {
-                          search = value;
-                        },
-                        style: TextStyle(color: Colors.black)),
+                    child: GetBuilder<MainViewController>(
+                        init: MainViewController(),
+                        builder: (value) => TextField(
+                            maxLines: 1,
+                            maxLength: 30,
+                            cursorColor: orangeCustom,
+                            textInputAction: TextInputAction.done,
+                            controller: maincontroller.searchController,
+                            decoration: InputDecoration(
+                                prefixIcon:
+                                    Icon(Icons.search, color: Colors.grey),
+                                counterText: "",
+                                filled: true,
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  borderSide: BorderSide(
+                                      width: 0,
+                                      style: BorderStyle.solid,
+                                      color: orangeCustom),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  borderSide: BorderSide.none,
+                                ),
+                                hintStyle: TextStyle(color: Colors.black54),
+                                hintText: "Search",
+                                fillColor: Colors.white),
+                            onChanged: (value) {
+                              print(maincontroller.isSearching.value);
+                              if (maincontroller
+                                  .searchController.text.isEmpty) {
+                                maincontroller.isSearching(false);
+                              } else {
+                                maincontroller.isSearching(true);
+
+                                maincontroller
+                                    .searchString(value.toLowerCase());
+
+                                maincontroller.filtredList(maincontroller
+                                    .products.value
+                                    .where((prod) => (prod!.title!
+                                            .toLowerCase()
+                                            .contains(maincontroller
+                                                .searchString.value) ||
+                                        prod.description!
+                                            .toLowerCase()
+                                            .contains(maincontroller
+                                                .searchString.value)))
+                                    .toList());
+                                print(maincontroller.filtredList.value);
+                              }
+                            },
+                            style: TextStyle(color: Colors.black))),
                   ),
                   Positioned(
                     top: 5,
                     right: 5,
-                    child: RoundedCornersButton(
-                        child: Text('OK',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500)),
-                        fillColor: orangeCustom,
-                        borderColor: Colors.transparent,
-                        height: 35,
-                        width: 35,
-                        borderRadius: 5,
-                        onpressed: () {},
-                        textColor: Colors.white),
+                    child: GetBuilder<MainViewController>(
+                        init: MainViewController(),
+                        builder: (value) => RoundedCornersButton(
+                            child: Text('OK',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w500)),
+                            fillColor: orangeCustom,
+                            borderColor: Colors.transparent,
+                            height: 35,
+                            width: 35,
+                            borderRadius: 5,
+                            onpressed: () {
+                              maincontroller.isSearching(true);
+                            },
+                            textColor: Colors.white)),
                   ),
                 ],
               )),

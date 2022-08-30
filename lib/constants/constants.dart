@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Api {
-  static const String home = "http://192.168.8.102:8000/";
+  static const String home = "http://192.168.8.101:8000/";
 }
 
 var orangeCustom = Color.fromARGB(255, 226, 64, 12);

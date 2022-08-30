@@ -5,20 +5,33 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmkiin_test/model/dummy_products_model.dart';
 import 'package:tmkiin_test/model/error.dart';
-import 'package:tmkiin_test/model/login.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/constants.dart';
-import '../model/products.dart';
 
 class MainViewController extends GetxController {
   final searchController = TextEditingController();
   var selected = false.obs;
   var token = "".obs;
   var products = <ProductsDummy?>[].obs;
+  var filtredList = <ProductsDummy?>[].obs;
   var isDataLoading = false.obs;
+  var searchString = "".obs;
+  var isSearching = false.obs;
+  var categoriesList = <String?>[].obs;
   ErrorReponse? logoutRes;
+  void setpage(int pageNbr) {
+    pageController.animateToPage(
+      pageNbr,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.linear,
+    );
+  }
 
+  PageController pageController = PageController(
+    initialPage: 0,
+    keepPage: false,
+  );
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -53,7 +66,7 @@ class MainViewController extends GetxController {
   void onClose() {}
   logout(String token) async {
     //print(token);
-    //savePref();
+    // savePref();
 
     try {
       var headers = {'Content-Type': 'application/json'};
@@ -96,6 +109,8 @@ class MainViewController extends GetxController {
     List<ProductsDummy> prodList = (json.decode(response.body) as List)
         .map((data) => ProductsDummy.fromJson(data))
         .toList();
+    categoriesList(prodList.map((e) => e.category.toString()).toSet().toList());
+    print(categoriesList.value);
     if (response.statusCode == 200) {
       return prodList;
     } else {
